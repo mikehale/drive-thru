@@ -3,13 +3,6 @@ require 'json'
 
 dna = {
   :recipes => [
-    "openssh",
-    "git",
-    "mysql::server", 
-    "apache2", "apache2::mod_rails"
-    "passenger", 
-    "rsync", 
-    "postfix"
    ]
 }
 
