@@ -1,0 +1,6 @@
+[submodule "cookbooks"]
+	path = cookbooks
+	url = git://github.com/mikehale/cookbooks.git
+[submodule "sprinkle_chef"]
+	path = sprinkle_chef
+	url = git://github.com/mikehale/sprinkle_chef.git
