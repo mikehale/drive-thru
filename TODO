@@ -1,2 +1,3 @@
-TODO:
 * change Rakefile to a cap script?
+* turn this into a proper gem with a driv-thru binary that generates the neccessary resources
+* use a binary package for ruby 1.8.6 to speed up install

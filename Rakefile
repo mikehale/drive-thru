@@ -8,9 +8,11 @@
 
 TOPDIR = File.expand_path(File.dirname(__FILE__))
 
+# Edit these variables for your site
 ZONE_NAME = "example.com."
 ZONE_IP = "a.b.c.d"
 API_PASSWORD = "" # from manage.slicehost.com
+
 HOST = ZONE_IP
 HOST_LOGIN="root@#{HOST}"
 RSYNC="rsync -avz --delete --delete-excluded --exclude '.*'"

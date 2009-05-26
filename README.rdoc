@@ -7,6 +7,7 @@ to a box that contains everything that you've ordered off the menu (as defined b
 
   git clone git://github.com/mikehale/drive-thru.git
   cd drive-thru
+  git submodule init && git submodule update
 
   # edit Rakefile for your server
 
@@ -18,3 +19,5 @@ to a box that contains everything that you've ordered off the menu (as defined b
   # add recipes and update dna.rb
   rake
   # repeat
+
+== Note: I've only tested this on slicehost using the ubuntu jaunty image.
