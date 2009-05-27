@@ -1,9 +1,6 @@
 require 'rubygems'
 require 'json'
 
-dna = {
-  :recipes => [
-   ]
-}
+dna = {}
 
 open(File.dirname(__FILE__) + "/dna.json", "w").write(dna.to_json)

@@ -1,24 +1,7 @@
-# Run `rake initialize_host` once to:
-# * add your ssh key to the server
-# * setup dns for your zone including google hosted apps and SPF records
-# * install chef-solo
-# * and finally run your recipes on the remote box
-
-# Run `rake` after updating your site-cookbooks or your dna.rb to apply the latest changes to your box.
-
-TOPDIR = File.expand_path(File.dirname(__FILE__))
-
-# Edit these variables for your site
-ZONE_NAME = "example.com."
-ZONE_IP = "a.b.c.d"
-API_PASSWORD = "" # from manage.slicehost.com
-
-HOST = ZONE_IP
-HOST_LOGIN="root@#{HOST}"
-RSYNC="rsync -avz --delete --delete-excluded --exclude '.*'"
-
+require File.join(File.dirname(__FILE__), 'config', 'rake')
 load 'sprinkle_chef/Rakefile'
 load 'lib/dns.rb'
+load 'lib/chef-repo.rb'
 
 desc "Create dna.json from dna.rb file"
 task :create_dna  do
