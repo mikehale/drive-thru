@@ -1,6 +1,6 @@
 = Drive-Thru: chef-solo in minutes
 
-drive-thru aims to be a quick and easy way to go from a box with only an ssh connection 
+Drive-Thru aims to be a quick and easy way to go from a box with only an ssh connection 
 to a box that contains everything that you've ordered off the menu (as defined by your cookbooks and dna.rb)
 
 == Getting started
