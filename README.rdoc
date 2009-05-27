@@ -8,11 +8,8 @@ to a box that contains everything that you've ordered off the menu (as defined b
   git clone git://github.com/mikehale/drive-thru.git
   cd drive-thru
   git submodule init && git submodule update
-
-=== Edit Rakefile with your server specific information
-
+  # Edit Rakefile with your server specific information
   rake initialize_host
-
   # adds your public key to root user, configures DNS, installs chef-solo, rsyncs your cookbooks and runs chef-solo
   # You'll need to enter your password once to setup the public key. After that take a 5 minute break while drive-thru handles your order.
 
