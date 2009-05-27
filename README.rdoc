@@ -9,15 +9,127 @@ to a box that contains everything that you've ordered off the menu (as defined b
   cd drive-thru
   git submodule init && git submodule update
 
-  # edit Rakefile for your server
+=== Edit Rakefile with your server specific information
 
-  # add your public key to root user, setup DNS, install chef-solo, run chef-solo
   rake initialize_host
+
+  # adds your public key to root user, configures DNS, installs chef-solo, rsyncs your cookbooks and runs chef-solo
+  # You'll need to enter your password once to setup the public key. After that take a 5 minute break while drive-thru handles your order.
 
 == Workflow
 
-  # add recipes and update dna.rb
-  rake
-  # repeat
+* add recipes and update dna.rb
+* run rake
+* rinse and repeat
 
 == Note: I've only tested this on slicehost using the ubuntu jaunty image.
+
+== Apache + Passenger Example
+
+This example will install apache and passenger on your box, and configure apache for your application(s).
+You'll still need to cap deploy your rails app(s). Check out http://github.com/ezmobius/chef-deploy for how to deploy your application using chef.
+
+=== Update your dna.rb:
+
+  dna = {
+    :apps_dir => "/var/www/apps",
+    :applications => [
+      {
+        :name => "example",
+        :server_name => "example.com",
+        :server_aliases => ["www.example.com"],
+      }
+    ],
+    :recipes => [
+      "apache2", "apache2::mod_rails",
+      "passenger",
+      "applications"
+     ]
+  }
+
+=== Add an applications cookbook to site-cookbooks:
+
+  rake COOKBOOK=applications, optional CB_PREFIX=site-
+
+=== Edit site-cookbooks/applications/recipes/default.rb
+
+  apache_site "000-default" do
+    enable false
+  end
+
+  directory(node[:apps_dir])
+
+  node[:applications].each do |config|
+    name = config[:name]
+    config[:env] ||= "production"
+    config[:server_name] ||= node[:fqdn]
+    config[:server_aliases] ||= []
+    config[:port] ||= 80
+    ssl = true if config[:port].to_s != "80"
+    protocol = ssl ? "https" : "http"
+    name_env = "#{name}_#{config[:env]}"
+    app_dir = "#{node[:apps_dir]}/#{name_env}"
+
+    web_app name_env do
+      docroot "#{app_dir}/current/public"
+      template "rails.vhost.erb"
+      server_name config[:server_name]
+      server_aliases config[:server_aliases]
+      rails_env config[:env]
+      port config[:port] || "80"
+      ssl ssl
+      protocol protocol
+    end
+  end
+
+=== Create site-cookbooks/applications/templates/default/rails.vhost.rb
+
+  <% if @params[:ssl] -%>
+  <VirtualHost *:80>
+    ServerName <%= @params[:server_name] %>
+    <%= 'ServerAlias ' unless @params[:server_aliases].empty? %><% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
+
+    RedirectPermanent / https://<%= @params[:server_name] %>:<%= @params[:port] %>/
+  </VirtualHost>
+
+  <% end -%>
+  <VirtualHost *:<%= @params[:port] %>>
+    ServerName <%= @params[:server_name] %>
+    <%= 'ServerAlias ' unless @params[:server_aliases].empty? %><% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
+    DocumentRoot <%= @params[:docroot] %>
+
+    PassengerEnabled on
+    RailsEnv <%= @params[:rails_env] %>
+
+    <Directory <%= @params[:docroot] %>>
+      Options FollowSymLinks
+      AllowOverride None
+      Order allow,deny
+      Allow from all
+    </Directory>
+
+    RewriteEngine On
+
+    LogLevel info
+    RewriteLogLevel 0
+
+    ErrorLog <%= @node[:apache][:log_dir] %>/<%= @params[:name] %>-error.log
+    CustomLog <%= @node[:apache][:log_dir] %>/<%= @params[:name] %>-access.log combined
+    RewriteLog <%= @node[:apache][:log_dir] %>/<%= @params[:name] %>-rewrite.log
+
+    # Canonical host: <%= @params[:server_name] %>
+    RewriteCond %{HTTP_HOST}   !^<%= @params[:server_name] %> [NC]
+    RewriteCond %{HTTP_HOST}   !^$
+    RewriteRule ^/(.*)$        <%= "#{@params[:protocol]}://#{@params[:server_name]}" %>/$1 [L,R=301]
+
+    # Maintenance page
+    RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+    RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+    RewriteRule ^.*$ /system/maintenance.html [L]
+
+  <% if @params[:ssl] -%>
+    SSLEngine On
+    SSLCertificateFile <%= "#{@node[:apache][:dir]}/ssl/#{@params[:server_name]}.pem" %>
+    SSLCertificateKeyFile <%= "#{@node[:apache][:dir]}/ssl/#{@params[:server_name]}.pem" %>
+  <% end -%>
+  </VirtualHost>

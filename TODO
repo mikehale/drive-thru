@@ -1,3 +1,5 @@
 * change Rakefile to a cap script?
 * turn this into a proper gem with a driv-thru binary that generates the neccessary resources
-* use a binary package for ruby 1.8.6 to speed up install
+* use a binary package for ruby 1.8.6 to speed up sprinkle portion of install
+* stop using custom gem after my patches have been released in the next chef gem
+* add openssl cookbook to generate cert for application
