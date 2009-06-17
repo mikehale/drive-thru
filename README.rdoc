@@ -7,12 +7,11 @@ to a box that contains everything that you've ordered off the menu (as defined b
 
 You'll need to enter your password once to setup the public key. After that take a 5 minute break while drive-thru handles your order.
 
-  git clone git://github.com/mikehale/drive-thru.git
-  cd drive-thru
-  git submodule init && git submodule update
-  # Edit Rakefile with your server specific information
-  rake initialize_host
-  # adds your public key to root user, configures DNS, installs chef-solo, rsyncs your cookbooks and runs chef-solo
+1. `git clone git://github.com/mikehale/drive-thru.git`
+1. `cd drive-thru`
+1. `git submodule init && git submodule update`
+1. Edit config/rake.rb with your server specific information
+1. `rake initialize_host` # (adds your public key to root user, configures DNS, installs chef-solo, rsyncs your cookbooks and runs chef-solo)
 
 == Workflow
 
