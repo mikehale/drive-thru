@@ -31,11 +31,6 @@ task :run_chef_solo => [:update_config, :update_cookbooks] do
   remote(command)
 end
 
-task :install_custom_chef do
-  sh "#{RSYNC} chef-0.6.2.gem #{HOST_LOGIN}:"
-  remote "gem install chef-0.6.2.gem"
-end
-
 def remote(cmd)
   sh "ssh #{HOST_LOGIN} '#{cmd}'"
 end
@@ -43,4 +38,4 @@ end
 task :default => :run_chef_solo
 
 desc "Automatically initialze #{HOST} from scratch. You should only have to enter the root password once."
-task(:initialize_host => ['add_ssh_key', 'setup_dns', 'chef:solo', 'install_custom_chef', 'run_chef_solo']) {}
+task(:initialize_host => ['add_ssh_key', 'setup_dns', 'chef:solo', 'run_chef_solo']) {}
