@@ -38,4 +38,8 @@ end
 task :default => :run_chef_solo
 
 desc "Automatically initialze #{HOST} from scratch. You should only have to enter the root password once."
-task(:initialize_host => ['add_ssh_key', 'setup_dns', 'chef:solo', 'run_chef_solo']) {}
+dependencies = %w[add_ssh_key]
+dependencies << 'setup_dns' unless API_PASSWORD == ""
+dependencies << 'chef:solo'
+dependencies << 'run_chef_solo'
+task(:initialize_host => dependencies) {}
